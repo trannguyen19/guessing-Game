@@ -44,11 +44,18 @@ result loop
 enum gameResult{LOST, WIN};
 
 int main(){
+    FILE *fp;
+    int max_persist;
+    fp=fopen("max_persist.txt", "r+");
+    
+    char option_persist;
+  
+
     const int MAX_GAME = 1000;
     const int MAX_VALUE = 10000;
 
     int condition = 1, maxCond = 1;
-    int number,  max = 10,inputMax, totalGame = 0, selection, numOfGuesses, correct; 
+    int number,  max = 10 ,inputMax, totalGame = 0, selection, numOfGuesses, correct; 
     char guessNumber[100];
     
     int result[MAX_GAME];
@@ -57,9 +64,11 @@ int main(){
     
     const char *gameResult[] = {"Lost","Win"};
     const char menu[] = "Press 1 to play a game\nPress 2 to change the max number\nPress 3 to quit\n";
-
+    
     time_t t;
     enum gameResult game;
+
+    
 
     while(condition == 1){
         printf("\n%s\nYour selection: ",menu);
@@ -71,10 +80,11 @@ int main(){
             numOfGuesses = 0;
             game = LOST;
             correct = 0;
+            
+           
             while(correct != 1){
                 printf("Enter a number: ");
                 scanf("%s", guessNumber);
-                
 
                 if(*guessNumber == 'q'){
                     break;
@@ -104,21 +114,40 @@ int main(){
         else if(selection == 2){
             maxCond = 1;
             printf("The max value you can set is: %d\n",MAX_VALUE);
-            while(maxCond == 1){
-                
-                printf("Enter a new max value: ");
-                scanf("%d",&inputMax);
-                if(inputMax < 0){
-                    printf("Max value cannot be negative!\n");
-                }
-                else if (inputMax > MAX_VALUE){
-                    printf("Max value must be less than %d\n",MAX_VALUE);   
-                }
-                else{
-                    max = inputMax;
-                    maxCond = 0;
-                }
+            printf("Do you want to use the saved max value? (y/n)\n");
+            scanf("%s",&option_persist);
+            if(option_persist == 'y'){
+                fscanf(fp,"%d",&max_persist);
+                max = max_persist;
+
             }
+            else{
+                  while(maxCond == 1){
+                
+                    printf("Enter a new max value: ");
+                    scanf("%d", &inputMax);
+                
+                    if(inputMax < 0){
+                        printf("Max value cannot be negative!\n");
+                    }
+                    else if (inputMax > MAX_VALUE){
+                        printf("Max value must be less than %d\n",MAX_VALUE);   
+                    }
+                    else{
+                        max = inputMax;
+                        fp=fopen("max_persist.txt", "w+");
+                        fprintf(fp,"%d",max);
+
+
+                        maxCond = 0;
+                    }
+                }
+
+            }
+
+            
+            
+          
 
 
         }
@@ -139,6 +168,7 @@ int main(){
         printf("%d\t %s\t  %d\n", game, gameResult[result[game]], totalGuesses[game]);
        
     }
+    fclose(fp);
     return(0);
 }
 
